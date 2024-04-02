@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "[Info] AMPStart for Docker - v22.12.2"
+echo "[Info] AMPStart for Docker - v23.07.1"
+INSTALLED_DEPS_FILE="/AMP/InstalledDeps.json"
 
 if [ -z "${AMPUSERID}" ]; then
   echo "[Info] This docker image cannot be used directly by itself - it must be started by ampinstmgr"
@@ -21,6 +22,38 @@ else
     usermod -aG tty amp
     chmod +x /AMP/AMP_Linux_x86_64
     echo "[Info] Container setup complete."
+fi
+
+if [ -f "$INSTALLED_DEPS_FILE" ]; then
+  INSTALLED_DEPS=$(jq -r '.[]' $INSTALLED_DEPS_FILE)
+else
+  INSTALLED_DEPS=""
+  echo "[]" > $INSTALLED_DEPS_FILE
+fi
+
+REQUIRED_DEPS=$(echo $AMP_CONTAINER_DEPS | jq -r '.[]')
+
+DEPS_TO_INSTALL=()
+for DEP in $REQUIRED_DEPS; do
+  if ! [[ $INSTALLED_DEPS =~ $DEP ]]; then
+    DEPS_TO_INSTALL+=($DEP)
+  fi
+done
+
+if [ ${#DEPS_TO_INSTALL[@]} -ne 0 ]; then
+  echo "[Info] Installing dependencies..."
+  apt-get update
+  apt-get install -y ${DEPS_TO_INSTALL[@]}
+
+#  for DEP in ${DEPS_TO_INSTALL[@]}; do
+#    jq --arg dep "$DEP" '. += [$dep]' $INSTALLED_DEPS_FILE > temp && mv temp $INSTALLED_DEPS_FILE
+#  done
+
+  apt-get clean
+  rm -rf /var/lib/apt/lists/*
+  echo "[Info] Installation complete."
+else
+  echo "[Info] No missing dependencies to install."
 fi
 
 export AMPHOSTPLATFORM
