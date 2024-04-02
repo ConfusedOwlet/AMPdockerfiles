@@ -31,7 +31,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v4
         with:
-          context: ./${{ matrix.tag.file }}
+          context: .
+          file: ${{ matrix.tag.file }}
           platforms: linux/amd64
           push: true
           tags: ghcr.io/frozensoda/amp-docker-images:${{ matrix.tag.name }}
