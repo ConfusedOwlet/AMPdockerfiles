@@ -46,6 +46,7 @@ ENV LANGUAGE="en_US:en"
 ENV LC_ALL="en_US.UTF-8"
 
 ADD ampstart.sh /
+RUN chmod +x /ampstart.sh
 
 ENTRYPOINT ["/ampstart.sh"]
 CMD []
