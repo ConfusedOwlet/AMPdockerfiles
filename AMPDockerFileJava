@@ -1,6 +1,6 @@
 # AMP Dockerfile
 
-FROM ghcr.io/frozensoda/amp-docker-images
+FROM confusedowlet/ampdocker
 
 RUN mkdir -p /usr/share/man/man1 && \
     apt-get update && \

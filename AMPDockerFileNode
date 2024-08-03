@@ -1,4 +1,4 @@
-FROM ghcr.io/frozensoda/amp-docker-images
+FROM confusedowlet/ampdocker
 
 RUN apt-get update && apt-get -y upgrade && \
         apt-get install -y nodejs npm && \
