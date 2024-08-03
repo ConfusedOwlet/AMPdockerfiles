@@ -1,0 +1,14 @@
+FROM confusedowlet/ampdocker
+
+RUN export CODENAME="$( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release )" \
+	&& dpkg --add-architecture i386 \
+	&& mkdir -pm755 /etc/apt/keyrings \
+	&& wget -O /etc/apt/keyrings/winehq-archive.key https://dl.winehq.org/wine-builds/winehq.key \
+	&& wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/debian/dists/${CODENAME}/winehq-${CODENAME}.sources \
+	&& apt-get update && apt-get -y upgrade \
+	&& apt-get install -y winehq-stable wine32 wine64 wine-binfmt python3 winbind libwine libwine:i386 fonts-wine xauth xvfb \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
+
+ENTRYPOINT ["/ampstart.sh"]
+CMD []
